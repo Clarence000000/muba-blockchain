@@ -16,7 +16,7 @@ OptionsCopilot is a single Next.js web app. It has one job end-to-end: take a pl
 |---|---|---|
 | Frontend | Next.js (App Router) + React + TypeScript | Chat UI, trade cards, trades list |
 | Backend | Next.js Route Handlers (`app/api/**/route.ts`) | No separate backend service needed for hackathon scope |
-| Database | PostgreSQL | Chat messages, trades, cached orders/market data |
+| Database | Supabase (PostgreSQL) | Chat messages, trades, cached orders/market data |
 | ORM | Prisma (recommended) | Type-safe queries, quick migrations, pairs naturally with TS |
 | Blockchain SDK | `@thetanuts-finance/thetanuts-client` + `ethers` | Reading orders, market data, building/filling trades |
 | Agent tools | `@thetanuts-finance/mcp` (MCP server) | Reads state, prices, builds transactions — never signs |
@@ -39,7 +39,7 @@ OptionsCopilot is a single Next.js web app. It has one job end-to-end: take a pl
     │             │
     ▼             ▼
 ┌─────────┐  ┌───────────────────────────┐
-│PostgreSQL│  │  Agent orchestration layer │
+│Supabase │  │  Agent orchestration layer │
 │(Prisma)  │  │  Gemini (tool use) ⇄ MCP   │
 └─────────┘  │  server (reads/prices/     │
              │  builds tx, never signs)   │
@@ -57,7 +57,7 @@ OptionsCopilot is a single Next.js web app. It has one job end-to-end: take a pl
 
 Everything runs inside the Next.js app for the hackathon — no separate microservice. The MCP server can run as a local subprocess/sidecar that the route handler talks to, or its tool logic can be called directly from a server-side agent module if that's simpler to wire up in the time available.
 
-## 4. Data model (PostgreSQL / Prisma schema)
+## 4. Data model (Supabase PostgreSQL / Prisma schema)
 
 ```prisma
 model User {
