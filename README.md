@@ -47,8 +47,3 @@ This repository is currently a work in progress. Below is a summary of the infra
 * **RPC Check:** Created `lib/chain/thetanutsClient.ts` and successfully verified our `THETANUTS_RPC_URL` connects and reads from the Base Mainnet (Chain ID 8453).
 * **MCP Server Integration:** Because the `@thetanuts-finance/mcp` package was not published to the public NPM registry, we successfully cloned the [official GitHub repository](https://github.com/Thetanuts-Finance/thetanuts-sdk) directly into `vendor/thetanuts-sdk`. 
 * We built the SDK and the MCP server locally and successfully linked it into our `node_modules` so our Next.js app can use it natively.
-
----
-
-## Next Steps
-We are now ready to begin **Feature 1: Chat & Intent Parsing**, which involves building the chat UI and wiring up the Gemini AI!
