@@ -1,0 +1,52 @@
+// use prisma-next
+
+model User {
+  id        String   @id @default(uuid())
+  walletAddress String @unique
+  createdAt DateTime @default(now())
+  chats     ChatSession[]
+  trades    Trade[]
+}
+
+model ChatSession {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  messages  ChatMessage[]
+}
+
+model ChatMessage {
+  id          String   @id @default(uuid())
+  sessionId   String
+  session     ChatSession @relation(fields: [sessionId], references: [id])
+  role        String   // "user" | "assistant" | "tool"
+  content     String
+  createdAt   DateTime @default(now())
+}
+
+model Trade {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  chatMessageId   String?  // the assistant message that proposed this trade
+  asset           String   // e.g. "ETH"
+  optionType      String   // "call" | "put"
+  strike          Decimal
+  expiry          DateTime
+  premium         Decimal
+  sizeUsd         Decimal
+  status          String   // "proposed" | "confirmed" | "submitted" | "filled" | "failed"
+  txHash          String?
+  orderSource     String   // "optionbook" | "rfq"
+  rawQuote        Json     // full MCP response for audit/debug
+  createdAt       DateTime @default(now())
+  updatedAt       temporal.updatedAtString()
+}
+
+model MarketDataCache {
+  id          String   @id @default(uuid())
+  asset       String
+  payload     Json      // raw getMarketData() snapshot
+  fetchedAt   DateTime  @default(now())
+}
