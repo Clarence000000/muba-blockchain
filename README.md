@@ -47,3 +47,37 @@ This repository is currently a work in progress. Below is a summary of the infra
 * **RPC Check:** Created `lib/chain/thetanutsClient.ts` and successfully verified our `THETANUTS_RPC_URL` connects and reads from the Base Mainnet (Chain ID 8453).
 * **MCP Server Integration:** Because the `@thetanuts-finance/mcp` package was not published to the public NPM registry, we successfully cloned the [official GitHub repository](https://github.com/Thetanuts-Finance/thetanuts-sdk) directly into `vendor/thetanuts-sdk`. 
 * We built the SDK and the MCP server locally and successfully linked it into our `node_modules` so our Next.js app can use it natively.
+
+---
+
+## Feature 1: Chat & Intent Parsing (Person A Progress)
+
+### 1. Shared Types & Data Contracts
+* **File:** `lib/agent/types.ts`
+* Defined `TradeIntent`, `ChatRole`, and `ChatMessageUI` types for cross-team contract consistency (Person B & C integration).
+
+### 2. AI Brain & Intent Parsing Agent
+* **File:** `lib/agent/runAgent.ts`
+* Powered by **Google Gemini 3.6 Flash** with native **Function Calling / Tool Use** (`extract_trade_intent`):
+  * **Asset Extraction:** Defaults to `ETH` (supports `BTC`).
+  * **Direction Parsing:** Accurately maps bullish/yield view to `call` and protective/downside view to `put`.
+  * **Timeframe Extraction:** Categorizes duration into `day`, `week`, or `month`.
+  * **Position Size:** Automatically extracts USD amounts (e.g. `"$150"` → `150`).
+  * **Contextual Memory:** Ingests conversation history (last 10 messages) for multi-turn follow-ups.
+  * **Greeting & FAQ Filter:** Answers off-topic and general questions naturally without triggering false trades.
+
+### 3. Backend Route & Database Persistence
+* **File:** `src/app/api/chat/route.ts`
+* Handles `POST /api/chat` requests with full validation.
+* Auto-provisions demo user records (`demo-user`) and active `ChatSession` in Supabase PostgreSQL.
+* Decodes PostgreSQL timestamptz seamlessly with `temporal-polyfill` inside `src/prisma/db.ts`.
+* Automatically stores all user prompts and assistant replies to `ChatMessage`.
+* Integrated with Person B's `/api/trade/propose` endpoint with resilient fallback.
+
+### 4. Modern Dark Midnight Frontend
+* **Header ([`Header.tsx`](src/app/components/Header.tsx)):** `OptionsCopilot` branding, tab navigation (`Copilot Chat` & `My Trades`), balance badge (`$124.50 USDC`), and copyable wallet address button (`0x71C...3A9f`).
+* **Hero & Prompt Chips ([`ChatWindow.tsx`](src/app/components/ChatWindow.tsx), [`PromptChips.tsx`](src/app/components/PromptChips.tsx)):** Glowing bot avatar, title, and 4 one-click starter chips (`Bet ETH goes up`, `Protect my ETH`, `Yield on USDC`, `High Volatility play`) that immediately submit queries.
+* **Message Thread & Thinking State ([`ThinkingIndicator.tsx`](src/app/components/ThinkingIndicator.tsx), [`TradeSummaryCard.tsx`](src/app/components/TradeSummaryCard.tsx)):** Real-time chat bubbles, animated pulse & bounce thinking wave, auto-scroll, and strategy proposal card slot.
+* **Floating Input Bar:** Dark capsule container with Enter-to-submit (Shift+Enter for newline), input disable protection during inference, and disclaimer footer.
+* **My Trades View ([`MyTrades.tsx`](src/app/components/MyTrades.tsx)):** Portfolio position tracking with strike, contract expiry, and P&L indicators.
+
