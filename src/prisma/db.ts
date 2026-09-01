@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import 'temporal-polyfill/global';
-if (typeof globalThis.Temporal === 'undefined') {
+if (!('Temporal' in globalThis)) {
   import('@js-temporal/polyfill').then(({ Temporal }) => {
-    (globalThis as any).Temporal = Temporal;
+    (globalThis as Record<string, unknown>).Temporal = Temporal;
   }).catch(() => {});
 }
 import postgres from '@prisma/orm-postgres/runtime';
