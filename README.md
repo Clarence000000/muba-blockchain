@@ -60,8 +60,10 @@ npm run dev
 * **UI Components:** Dark Midnight layout, prompt chips, real-time message thread, and thinking state.
 
 ### Feature 2: Trade Discovery & Pricing (Person B)
-* **API Route:** `POST /api/trade/propose` calculates spot price, target strike, premium cost, expiry, breakeven, and plain-English summary.
-* **Database Sync:** Persists trade drafts with status `proposed`.
+* **API Route:** `POST /api/trade/propose` calculates spot price, target strike, premium cost, expiry, breakeven, and plain-English summary. Links `chatMessageId` to trade records in PostgreSQL DB.
+* **Session & History Endpoints:** Added `GET /api/chat/sessions` and `POST /api/chat/sessions` to manage chat sessions, and `GET /api/chat/history` to load complete conversation history per session with associated trade proposals (`tradeDraftId`).
+* **Chat History Sidebar & Persistence UI:** Integrated a collapsible left sidebar in `ChatWindow.tsx` with session switching, auto-reloading of the most recent chat on page refresh, timestamp session titles, and "+ New Chat" creation.
+* **Database Sync:** Persists trade drafts with status `proposed` linked to specific chat sessions and assistant messages.
 * **Trade Summary Card:** Enhanced `TradeSummaryCard.tsx` component displaying plain-English summary & cost breakdown.
 
 ### Feature 3: Trade Execution & Confirmation (Person C)
