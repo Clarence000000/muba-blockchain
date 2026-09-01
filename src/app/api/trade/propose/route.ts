@@ -22,7 +22,7 @@ async function ensureUser(userId: string) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { intent, sessionId, userId = DEMO_USER_ID } = body;
+    const { intent, sessionId, chatMessageId, userId = DEMO_USER_ID } = body;
 
     if (!intent || !intent.asset || !intent.direction) {
       return NextResponse.json(
@@ -87,6 +87,7 @@ export async function POST(req: NextRequest) {
       createdTrade = await db.orm.public.Trade.create({
         id: tradeId,
         userId: userId,
+        chatMessageId: chatMessageId || undefined,
         asset: asset,
         optionType: optionType,
         strike: String(strikePrice),

@@ -91,9 +91,10 @@ export async function POST(req: NextRequest) {
     const { reply, intent } = await runAgent(sessionId, message, history);
 
     // 5. Persist assistant reply to DB
+    const assistantMsgId = "msg_" + Math.random().toString(36).substring(2, 10) + "_" + Date.now();
     try {
       await db.orm.public.ChatMessage.create({
-        id: "msg_" + Math.random().toString(36).substring(2, 10) + "_" + Date.now(),
+        id: assistantMsgId,
         sessionId,
         role: "assistant",
         content: reply,
@@ -110,7 +111,7 @@ export async function POST(req: NextRequest) {
         const tradeRes = await fetch(`${baseUrl}/api/trade/propose`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ intent, sessionId }),
+          body: JSON.stringify({ intent, sessionId, chatMessageId: assistantMsgId }),
         });
 
         if (tradeRes.ok) {
