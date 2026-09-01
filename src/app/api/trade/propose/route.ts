@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../prisma/db";
+import { Temporal } from "@js-temporal/polyfill";
 
 const DEMO_USER_ID = "demo-user";
 const DEMO_WALLET = "0x000000000000000000000000000000000000dEaD";
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
         asset: asset,
         optionType: optionType,
         strike: String(strikePrice),
-        expiry: expiryDate,
+        expiry: Temporal.Instant.from(expiryDate.toISOString()),
         premium: String(premiumUsd),
         sizeUsd: String(sizeUsd),
         status: "proposed",

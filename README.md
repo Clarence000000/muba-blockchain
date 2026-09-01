@@ -4,14 +4,6 @@ OptionsCopilot is an AI-powered trading agent built for the Thetanuts Finance MU
 
 ---
 
-## 📍 Where Progress Updates Are Saved
-General project progress and feature updates are maintained in this document ([`README.md`](README.md)) as well as product/technical specifications in the [`docs/`](docs/) directory:
-* [`README.md`](README.md) — Progress log & setup steps
-* [`docs/PRD_OptionsCopilot.md`](docs/PRD_OptionsCopilot.md) — Product Requirements Document
-* [`docs/SDD_OptionsCopilot.md`](docs/SDD_OptionsCopilot.md) — System Design & Architecture Document
-
----
-
 ## Tech Stack
 * **Framework:** Next.js (App Router) + React + Tailwind CSS
 * **Database:** Supabase (PostgreSQL) + Prisma Next (v8)
@@ -20,7 +12,7 @@ General project progress and feature updates are maintained in this document ([`
 
 ---
 
-## 🏃 How to Run & Use the Program
+## Set Up & Running the App
 
 ### 1. Prerequisites & Environment Setup
 Create a `.env` file in the root directory containing:
@@ -67,7 +59,7 @@ npm run dev
 * **Chat Route:** `POST /api/chat` with Supabase message persistence and session history.
 * **UI Components:** Dark Midnight layout, prompt chips, real-time message thread, and thinking state.
 
-### Feature 2: Trade Discovery & Pricing (Person B / Merged)
+### Feature 2: Trade Discovery & Pricing (Person B)
 * **API Route:** `POST /api/trade/propose` calculates spot price, target strike, premium cost, expiry, breakeven, and plain-English summary.
 * **Database Sync:** Persists trade drafts with status `proposed`.
 * **Trade Summary Card:** Enhanced `TradeSummaryCard.tsx` component displaying plain-English summary & cost breakdown.
