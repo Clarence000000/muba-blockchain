@@ -1,6 +1,36 @@
 # OptionsCopilot - Thetanuts Hackathon
 
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Google Gemini](https://img.shields.io/badge/Google_Gemini-8E75C2?style=for-the-badge&logo=googlegemini&logoColor=white)](https://ai.google.dev/)
+[![Base](https://img.shields.io/badge/Base-0052FF?style=for-the-badge&logo=base&logoColor=white)](https://base.org/)
+[![Thetanuts Finance](https://img.shields.io/badge/Thetanuts_Finance-FFA500?style=for-the-badge&logo=ethereum&logoColor=white)](https://thetanuts.finance/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
+
 OptionsCopilot is an AI-powered trading agent built for the Thetanuts Finance MUBA Hackathon. It allows users to place real on-chain options trades on Base mainnet using natural language.
+
+---
+
+## Product Description
+
+**OptionsCopilot** is an AI-driven options trading copilot built for the Thetanuts Finance ecosystem on Base Mainnet.
+
+### The Problem It Solves
+On-chain options are powerful financial instruments for hedging risk and expressing leveraged market views with defined downside. However, decentralized options platforms are notoriously intimidating for everyday crypto users:
+* **Complex Terminology & High Cognitive Overhead:** Traders must understand Greeks (&Delta;, &Gamma;, &Theta;), implied volatility surfaces, strike selection, expiries, and multi-step order books.
+* **Intimidating UX:** Most users who hold directional views (e.g., *"I think ETH will go up this week"* or *"I want to protect my portfolio from a drop"*) avoid options because existing DEX interfaces are built for quants and professional traders.
+* **Risk of Costly Mistakes:** Entering incorrect strikes, picking inappropriate expiration dates, or miscalculating premium costs and breakevens can lead to immediate financial loss.
+
+### How It Works
+OptionsCopilot transforms complex derivatives trading into an intuitive, conversation-driven experience:
+* **Conversational Trading Interface:** Express your market outlook in plain English (e.g., *"Bet ETH goes up this week"*, *"Protect my ETH from a 10% drop"*) or tap suggested starter prompt chips.
+* **AI-Powered Intent Parsing:** Powered by Google Gemini with structured function calling (`extract_trade_intent`), the agent extracts the underlying asset, direction (`call` vs. `put`), timeframe, and position size.
+* **Transparent Trade Discovery & Pricing:** Automatically maps user intent into tailored contract parameters with a plain-English Trade Summary Card detailing strike price, premium cost, expiry date, breakeven price, and strictly capped maximum loss.
+* **1-Click On-Chain Execution:** Signs and broadcasts transactions directly to the Thetanuts OptionBook on Base Mainnet with pre-flight gas estimations and instant BaseScan verification.
+* **Session & History Persistence:** Full chat history, session switching, and trade draft states are persisted in PostgreSQL via Supabase and Prisma Next.
 
 ---
 
