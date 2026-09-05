@@ -1,60 +1,63 @@
-# @thetanuts-finance/thetanuts-client
+# Thetanuts Finance — TypeScript SDK
 
-TypeScript client for trading options on **Base mainnet** via Thetanuts Finance V4 — listed orderbook fills, custom-built RFQs, and real-time price/order streams over WebSocket. Works in Node 18+ and modern browsers, ships as ESM and CJS with full type definitions.
-
-> **Full documentation:** [docs.thetanuts.finance/sdk](https://docs.thetanuts.finance/sdk)
-
-## Contents
-
-- [30-second start](#30-second-start)
-- [Two paths: read market data, or trade](#two-paths-read-market-data-or-trade)
-- [Choosing between OptionBook and RFQ](#choosing-between-optionbook-and-rfq)
-- [Modules](#modules)
-- [Common workflows](#common-workflows)
-- [Error handling](#error-handling)
-- [Production checklist](#production-checklist)
-- [Reference](#reference)
-- [Development](#development)
-- [Documentation & links](#documentation--links)
+> **Trade on-chain options with one function call.**  
+> The `@thetanuts-finance/thetanuts-client` SDK gives your app full access to Thetanuts Finance V4 on **Base Mainnet** — real-time market data, listed orderbook fills, custom RFQs, and multi-leg strategies — in a single, typed TypeScript package.
 
 ---
 
-## 30-second start
+## Why use this SDK?
 
-Install:
+Options trading on-chain is complex. Collateral math, sealed-bid auctions, ECDH-encrypted offers, multi-leg strike arrays — most teams spend weeks wiring this up from scratch. Thetanuts SDK eliminates that work entirely.
+
+| Without the SDK | With the SDK |
+|---|---|
+| Hand-craft ABI call data for every contract | `client.optionBook.fillOrder(order, amount)` |
+| Manually calculate collateral for PUTs, spreads, butterflies | `client.optionBook.previewFillOrder()` returns exact figures |
+| Build and manage ECDH keypairs for encrypted RFQs | `client.rfqKeys.getOrCreateKeyPair()` handles everything |
+| Parse raw chain events to find MM offers | `client.events.getOfferMadeEvents()` returns typed objects |
+| Write your own WebSocket reconnect logic | Built-in auto-reconnect with configurable retry limits |
+
+---
+
+## What you can build
+
+- **AI trading agents** — parse natural language intent, propose and confirm real options trades (as used in OptionsCopilot)
+- **Options trading UIs** — browse the live orderbook, display real-time pricing, let users fill or RFQ in one click
+- **Portfolio dashboards** — pull live positions, payoff calculations, and protocol stats for any address
+- **Market maker integrations** — subscribe to live price/order streams and programmatically submit RFQ offers
+- **DeFi protocols** — embed options strategies (collars, covered calls, protective puts) inside lending or vault products
+
+## Get started in 30 seconds
 
 ```bash
 npm install @thetanuts-finance/thetanuts-client ethers
 ```
-
-Instantiate a read-only client and prove it works:
 
 ```typescript
 import { ethers } from 'ethers';
 import { ThetanutsClient } from '@thetanuts-finance/thetanuts-client';
 
 const provider = new ethers.JsonRpcProvider('https://mainnet.base.org');
-const client = new ThetanutsClient({
-  chainId: 8453, // Base mainnet
-  provider,
-});
+const client = new ThetanutsClient({ chainId: 8453, provider });
 
+// Browse the live orderbook — no wallet needed
 const orders = await client.api.fetchOrders();
-console.log(`Found ${orders.length} live orders on the book`);
+console.log(`${orders.length} live orders on Base`);
 
+// Spot prices, updated in real time
 const market = await client.api.getMarketData();
 console.log(`ETH: $${market.prices.ETH}  BTC: $${market.prices.BTC}`);
 ```
 
-No signer, no approvals, no transactions — just network reads. If that prints, your setup is good.
+Read-only access requires no wallet, no approvals, and no transactions. If the above prints, you're ready to trade.
 
 ---
 
-## Two paths: read market data, or trade
+## Two ways to trade
 
-### Path A — I just want to read market data
+### Read market data — no wallet required
 
-You don't need a signer. The client above can already:
+Zero configuration for read-only access. The client above can already:
 
 - Browse the OptionBook (`client.api.fetchOrders`)
 - Fetch MM pricing for RFQ-style options (`client.mmPricing.getAllPricing`)
@@ -76,7 +79,7 @@ client.ws.subscribePrices((update) => {
 }, 'ETH');
 ```
 
-### Path B — I want to trade
+### Fill an order from the live orderbook
 
 You need three things in order:
 
@@ -116,9 +119,9 @@ Jump to [Common workflows](#common-workflows) for end-to-end fills, RFQs, multi-
 
 ---
 
-## Choosing between OptionBook and RFQ
+## Which trading path should I use?
 
-Both systems use the same cash-settled implementation contracts and produce identical option positions. The difference is **how you get a quote** and **who provides liquidity**.
+Both paths settle on the same cash-settled contracts and produce identical on-chain positions. The choice comes down to **whether the option you want already exists on the book**.
 
 |                | **OptionBook**                                                | **RFQ (Factory)**                                                                        |
 | -------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
@@ -133,13 +136,13 @@ Both systems use the same cash-settled implementation contracts and produce iden
 | User reads     | `getUserPositionsFromIndexer()`                               | `getUserRfqs()`, `getUserOptionsFromRfq()`                                               |
 | Stats          | `getBookProtocolStats()`, `getBookDailyStats()`               | `getFactoryProtocolStats()`, `getFactoryDailyStats()`                                    |
 
-Rule of thumb: if the order you want already exists on the book, fill it. If not, RFQ it.
+> **Rule of thumb:** If the order you want already exists on the book, fill it. If not, RFQ it.
 
 ---
 
-## Modules
+## 15 modules. Pull what you need.
 
-The client exposes 15 modules. Pull what you need; the rest stay idle.
+Each module is independently accessible. Unused modules add no overhead.
 
 | Module                  | Purpose                                              | Needs signer    |
 | ----------------------- | ---------------------------------------------------- | --------------- |
@@ -165,7 +168,7 @@ See [`src/modules/README.md`](src/modules/README.md) for per-module reference.
 
 ---
 
-## Common workflows
+## Trading examples
 
 ### OptionBook flows
 
@@ -405,7 +408,9 @@ const tx = await signer.sendTransaction({ to, data });
 console.log(`Settled early: ${tx.hash}`);
 ```
 
-#### All structures at a glance
+## Supported structures
+
+Trade vanilla options or go further with multi-leg structures. All settled in cash on Base Mainnet.
 
 | Structure  | Strikes | Implementation              | Strike order              |
 | ---------- | ------- | --------------------------- | ------------------------- |
@@ -479,9 +484,9 @@ The WebSocket module auto-reconnects (default 10 attempts). Tune via `maxReconne
 
 ---
 
-## Error handling
+## Typed errors. Predictable error handling.
 
-All SDK methods throw `ThetanutsError` with a typed `code`. The package also exports concrete subclasses for `instanceof` narrowing.
+Every SDK method throws a `ThetanutsError` with a typed `code`. Narrow by subclass to handle exactly what went wrong.
 
 ```typescript
 import {
@@ -552,6 +557,8 @@ const orders = await withRetry(() => client.api.fetchOrders());
 ---
 
 ## Production checklist
+
+Before going live, make sure:
 
 - **Bring your own RPC.** `https://mainnet.base.org` is rate-limited and unreliable under load. Use Alchemy, Infura, QuickNode, or your own node.
 - **Set a referrer** if you're routing user flow — fees accrue automatically.
@@ -707,33 +714,31 @@ scripts/
 
 ---
 
-## Development
+## Local development
 
 ```bash
 npm install
-npm run build           # tsup: ESM + CJS + types
+npm run build      # ESM + CJS + type declarations
 npm run typecheck
 npm run lint
-npm test                # live mainnet integration tests (needs network)
-npm run test:benchmark
+npm test           # Live mainnet integration tests (requires network)
 ```
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the four required gates and PR conventions.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for PR conventions.
 
 ---
 
-## Documentation & links
+## Documentation & resources
 
-| Section                                                                                | Description                                                  |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| [Getting Started](https://docs.thetanuts.finance/sdk/getting-started/overview)         | Installation, quick start, configuration                     |
-| [OptionBook](https://docs.thetanuts.finance/sdk/optionbook/overview)                   | Browse, preview, fill                                        |
-| [RFQ (Factory)](https://docs.thetanuts.finance/sdk/rfq/overview)                       | Custom options, multi-leg, RFQ lifecycle                     |
-| [Pricing](https://docs.thetanuts.finance/sdk/pricing/mm-pricing)                       | MM pricing, spreads, collateral cost                         |
-| [Guides](https://docs.thetanuts.finance/sdk/guides/error-handling)                     | Errors, WebSocket, production checklist                      |
-| [Loan](https://docs.thetanuts.finance/sdk/loan/overview)                               | Non-liquidatable lending                                     |
-| [SDK Reference](https://docs.thetanuts.finance/sdk/reference/client)                   | Client, modules, types, utilities                            |
-| [MCP Server](mcp-server/README.md)                                                     | MCP server for SDK reads and prepare-tool calldata builders   |
+| | |
+|---|---|
+| 📖 [Full Documentation](https://docs.thetanuts.finance/sdk) | Guides, API reference, advanced recipes |
+| 🚀 [Getting Started](https://docs.thetanuts.finance/sdk/getting-started/overview) | Installation, configuration, quick start |
+| 📘 [OptionBook Guide](https://docs.thetanuts.finance/sdk/optionbook/overview) | Browse, preview, fill listed orders |
+| 🔄 [RFQ Guide](https://docs.thetanuts.finance/sdk/rfq/overview) | Custom options, multi-leg, full lifecycle |
+| 💰 [Pricing Reference](https://docs.thetanuts.finance/sdk/pricing/mm-pricing) | MM quotes, Greeks, fee adjustments |
+| 🌐 [Thetanuts Finance](https://thetanuts.finance) | Protocol home |
+| 💻 [GitHub](https://github.com/Thetanuts-Finance/thetanuts-sdk) | Source, issues, contributions |
 
 ### Copy-paste examples
 

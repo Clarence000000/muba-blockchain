@@ -54,19 +54,19 @@ npm run dev
 * **Step 4: Wallet Setup:** Configured disposable signing wallet and `.env` credentials.
 * **Step 5: Plumbing Sanity Checks:** RPC connectivity check on Base Mainnet (Chain ID 8453) and vendored SDK setup in `vendor/thetanuts-sdk`.
 
-### Feature 1: Chat & Intent Parsing (Person A)
+### Feature 1: Chat & Intent Parsing 
 * **AI Agent:** Powered by Gemini 3.6 Flash with function calling (`extract_trade_intent`).
 * **Chat Route:** `POST /api/chat` with Supabase message persistence and session history.
 * **UI Components:** Dark Midnight layout, prompt chips, real-time message thread, and thinking state.
 
-### Feature 2: Trade Discovery & Pricing (Person B)
+### Feature 2: Trade Discovery & Pricing 
 * **API Route:** `POST /api/trade/propose` calculates spot price, target strike, premium cost, expiry, breakeven, and plain-English summary. Links `chatMessageId` to trade records in PostgreSQL DB.
 * **Session & History Endpoints:** Added `GET /api/chat/sessions` and `POST /api/chat/sessions` to manage chat sessions, and `GET /api/chat/history` to load complete conversation history per session with associated trade proposals (`tradeDraftId`).
 * **Chat History Sidebar & Persistence UI:** Integrated a collapsible left sidebar in `ChatWindow.tsx` with session switching, auto-reloading of the most recent chat on page refresh, timestamp session titles, and "+ New Chat" creation.
 * **Database Sync:** Persists trade drafts with status `proposed` linked to specific chat sessions and assistant messages.
 * **Trade Summary Card:** Enhanced `TradeSummaryCard.tsx` component displaying plain-English summary & cost breakdown.
 
-### Feature 3: Trade Execution & Confirmation (Person C)
+### Feature 3: Trade Execution & Confirmation 
 * **Signing Service:** `lib/chain/signer.ts` constructs, signs, and submits transactions to Base Mainnet via Ethers.
 * **Confirm Route:** `POST /api/trade/[id]/confirm` handles transaction submission and updates trade status to `filled` with `txHash`.
 * **Confirmation UI:** Interactive `TradeConfirm.tsx` component with BaseScan transaction verification link.
